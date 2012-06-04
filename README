@@ -1,0 +1,23 @@
+
+An example showing how to
+ - display a form to insert a new record into a MySQL database,
+     if not already submitted
+ - if submitted, inserts the information into the MySQL database,
+    then immediately retrieves the same record from the database and
+    displays it in the user's browser.
+
+Some important points:
+ - database connection information should be kept in a separate file
+    - that separate file should have a name with a ".php" extension
+    - it MUST start with "<?php" (or contents will be dumped to the browser!)
+    - it should be stored outside the main web page directory
+ - incoming input must be sanitized (to guard against SQL injection)
+    - it also needs to be checked for completeness and validity
+    - this should also be done in JavaScript on the client, but
+    - that script may not work
+    - even if it works, JavaScript may have been turned off on the client
+ - error messages should not be sent to the browser, because they are
+    - useless and annoying to regular users, and
+    - potentially useful to hackers
+
+
