@@ -1,0 +1,47 @@
+
+
+Using SQL similar to the following...
+
+use mysql
+-- show databases;
+DROP DATABASE IF EXISTS Autos;
+CREATE DATABASE Autos;
+use Autos
+CREATE TABLE `cars`
+(
+`id` int NOT NULL AUTO_INCREMENT
+, PRIMARY KEY (`id`)
+, UNIQUE KEY `id` (`id`)
+, `Make` varchar(20) default NULL
+, `Model` varchar(20) default NULL
+, `Year` int default NULL
+, `Date & Time Entered` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO `cars` (`Make`, `Model`, `Year`) VALUES ('Isuzu', 'Dunno', 1997);
+SELECT * FROM `cars`;
+
+
+
+... to create the database and table, and then using the php form page above to add entries,
+will result in a table with contents that can be formatted thusly:
+
+--------------
+SELECT * FROM `cars`
+--------------
+
++----+--------+----------+------+---------------------+
+| id | Make | Model | Year | Date & Time Entered |
++----+--------+----------+------+---------------------+
+| 1 | Isuzu | Dunno | 1997 | 2010-01-21 21:07:27 |
+| 2 | Toyota | Camry | 1998 | 2010-01-21 21:10:55 |
+| 3 | Honda | Accord | 1986 | 2010-01-21 21:11:11 |
+| 7 | Audi | Whatever | 2001 | 2010-01-21 21:23:57 |
+| 8 | Audi | Whatever | 2001 | 2010-01-21 21:24:49 |
+| 30 | Mazda | Izusu | 2005 | 2010-01-22 00:15:28 |
+| 31 | Isuzu | Brendan | 2020 | 2010-01-23 13:20:42 |
++----+--------+----------+------+---------------------+
+
+
+
+
