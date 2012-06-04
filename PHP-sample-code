@@ -1,0 +1,118 @@
+
+<?php
+
+$debug = 1; // if sql error, details will be sent TO THE SCREEN WITH NO LOGGING
+$debug = 0; // if sql error, details will be LOGGED. Message to screen, but no details.
+
+//Database Connection
+require_once ('..\..\xyz\dunno.php');
+
+// Sample contents of the database connection file:
+// (Start of file)
+// <?php
+// $conn = mysql_connect("localhost", "root", "youdecide");
+// mysql_select_db("name-of-database", $conn) or die(mysql_error());
+// (end of file)
+// Note that line 1, the beginning php tag, is critically important
+// - Omitting it will cause this file to display in the clear on the web page!!!
+// No end tag is needed, but it is good practice to include it anyway
+
+if (isset($_POST['submit']))
+{// Form was submitted - process it!
+// Safety first - sanitize the input!
+
+$IncomingMake = mysql_real_escape_string(stripslashes($_REQUEST['Make']));
+$IncomingModel= mysql_real_escape_string(stripslashes($_REQUEST['Model']));
+$IncomingYear = mysql_real_escape_string(stripslashes($_REQUEST['Year']));
+
+// Second, make sure input fields are complete and valid
+// This should already have been taken care of through a JavaScript on the client
+// JavaScript could be turned off, or the script could have problems.
+// So, must second-guess the work of the script.
+
+$inputOK = 1;
+
+if (!strlen($IncomingMake) > 0 ) $inputOK=0; // echo "Field Make is blank!<br />";
+if (!ctype_alpha($IncomingMake)) $inputOK=0; // echo "Make is NOT alphabetic!<br />";
+
+if (!strlen($IncomingModel) > 0 ) $inputOK=0; // echo "Field Model is blank!<br />";
+if (!ctype_alpha($IncomingModel)) $inputOK=0; // echo "Model is NOT alphabetic!<br />";
+
+if (!strlen($IncomingYear) > 0 ) $inputOK=0; // echo "Field Year is blank!<br />";
+if (strlen($IncomingYear) != 4 ) $inputOK=0; // echo "Year must have 4 digits!<br />";
+
+if (is_numeric($IncomingYear))
+{
+if (!(int) $IncomingYear == $IncomingYear)
+$inputOK=0; // echo "Year, ".$IncomingYear.", is NOT an integer!<br />";
+}
+else $inputOK=0; // echo "Year, ".$IncomingYear.", is NOT an integer!<br />";
+
+// Finally, ready to write to the table, if we have complete and valid input!
+if ($inputOK == 1)
+{ // meaning input is BOTH complete AND valid
+$sql = "INSERT INTO `cars` (`Make`, `Model`, `Year`) VALUES
+('".$IncomingMake."', '".$IncomingModel."', '".$IncomingYear."')";
+
+if ($result = mysql_query($sql ,$conn))
+{
+echo '<h1>Thank you</h1>
+We have entered the following new record into our database:
+<br />';
+$sql2 = "SELECT `Make`, `Model`, `Year` FROM cars where `id` =
+LAST_INSERT_ID()";
+if ($result2 = mysql_query($sql2 ,$conn))
+{
+while($row = mysql_fetch_array($result2))
+{
+echo "Make: ". $row['Make'].",
+Model: ".$row['Model'].", and
+Year: ". $row['Year'].".";
+echo "<br />";
+}
+} else
+{
+$qmsg= '<br />' . "ERROR RETRIEVING: ".mysql_error().".";
+if ($debug == 0)
+{
+error_log($qmsg."\r\n", 3, "../../xyz/sql_error_log.txt");
+echo "Unknown error retrieving";
+}
+else echo $qmsg;
+}
+} else
+{
+$qmsg= '<br />' . "ERROR INSERTING: ".mysql_error().".";
+if ($debug == 0)
+{
+error_log($qmsg."\r\n", 3, "../../xyz/sql_error_log.txt");
+echo "Unknown error inserting";
+}
+else echo $qmsg;
+}
+mysql_close($conn);
+}
+else echo "Input invalid, please try again!";
+?>
+   <br /><br /><input type="reset" value="Enter a new record." onClick="Redo()">
+   <script type="text/javascript">
+   function Redo() {window.location.href=self.location;}</script>
+   <?php
+}
+else // User did not see the form yet, display it, ready to enter data
+{
+?>
+
+<h1>Please enter the following information for your new car:</h1>
+<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+Make: <input type="text" name="Make" size="20"> <br>
+Model: <input type="text" name="Model" size="20"> <br>
+Year: <input type="text" name="Year" size="20"> <br>
+<input type="submit" name="submit" value="Next"> </form>
+</form> <!-- End of form -->
+
+<?php
+}
+?>
+
+
